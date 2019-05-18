@@ -1,0 +1,762 @@
+<!--
+OPEN TICKETS
+- Dialog box - make it functional with interactivity -- ask question about performance issue with cursor!!
+- Address cursor on particle system bug
+- ....something don't work at the end of the script
+- something with the physics and HUD display?
+- maybe put another sphere inside of info orb that triggers the hover hud menu
+- MUST PUT ASSETS FOLDER
+- need to make HUD larger, more centered
+- opening logo that fades away would be a great idea
+- fix this THREE.WebGLRenderer error about image size for the chips
+- does OBJLoader have to console log each one?
+-->
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Chip's Challenge</title>
+        <script src="index.js"></script>
+        <script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script> 
+        <script src="https://unpkg.com/aframe-room-component/dist/aframe-room-component.min.js"></script>
+        <script src="https://unpkg.com/aframe-particle-system-component@1.0.x/dist/aframe-particle-system-component.min.js"></script>
+        <script src="https://unpkg.com/@editvr/aframe-dialog-popup-component@1.7.2/dist/aframe-dialog-popup-component.min.js"></script>
+        <script src="https://unpkg.com/aframe-event-set-component@3.0.3/dist/aframe-event-set-component.min.js"></script>
+        <script src="//cdn.rawgit.com/donmccurdy/aframe-extras/v4.2.0/dist/aframe-extras.min.js"></script>
+        <script src="//cdn.rawgit.com/donmccurdy/aframe-physics-system/v3.2.0/dist/aframe-physics-system.min.js"></script>
+        <script src="make-invisible.js"></script>   
+        <script src="https://unpkg.com/aframe-animation-component@^4.1.2/dist/aframe-animation-component.min.js"></script>
+    </head>
+    <body>
+        <a-scene physics>
+            <a-assets>
+                <a-asset-item id="key-obj" src="assets/key.obj"></a-asset-item>
+                <a-asset-item id="key-mtl" src="assets/key.mtl"></a-asset-item>
+                <a-asset-item id="chip-obj" src="assets/pentium-m-chip.obj"></a-asset-item>
+                <a-asset-item id="chip-mtl" src="assets/pentium-m-chip.mtl"></a-asset-item>
+                <a-asset-item id="chalk-obj" src="assets/chalkboard.obj"></a-asset-item>
+                <a-asset-item id="chalk-mtl" src="assets/chalkboard.mtl"></a-asset-item>
+                <a-asset-item id="portal1-obj" src="assets/portal.obj"></a-asset-item>
+                <a-asset-item id="portal1-mtl" src="assets/portal.mtl"></a-asset-item>
+                <img id="quest" src="assets/quest.jpg">
+                <img id="wallrock1" src="assets/wallrocks1.png">
+                <img id="wallrock2" src="assets/wallrocks2.png">
+                <img id="wallrock3" src="assets/wallrocks3.png">
+                <img id="wallrock4" src="assets/wallrocks4.png">
+                <img id="green-key" src="assets/green-key1.png">
+                <img id="red-key" src="assets/red-key1.png">
+                <img id="blue-key" src="assets/blue-key1.png">
+                <img id="yellow-key" src="assets/yellow-key1.png">
+                <img id="chipFront" src="assets/Pentium-M-chip-front.jpg">
+                <img id="portalColor" src="assets/portal.png">
+                <img id="chalkBoardColor" src="assets/steel.png">
+                <audio id="winner" src="assets/win.wav"></audio>
+                <audio id="bgMusic" src="assets/bgmusic.mp3"></audio>
+                <audio id="pickup" src="assets/pickup.wav"></audio>
+                <audio id="unlock" src="assets/unlock.wav"></audio>
+            </a-assets>
+            
+            <!-- Ground -->
+            <a-grid static-body position="0 -0.01 0"></a-grid>
+
+            <!-- cursor setup -->
+            <a-entity id="rig" movement-controls="speed: 0.165" kinematic-body position="0 0 0">
+                <a-entity camera position="0 1.6 0" look-controls="pointerLockEnabled: true" sound="src: #bgMusic; autoplay:true; volume: 1">
+                    <a-entity cursor raycaster="far: 3; interval: 250"
+                        position="0 0 -1"
+                        geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+                        material="color: black; shader: flat"
+                    ></a-entity>
+                    <!-- HUD display -->
+                    <a-plane id="hud" position="-1.1 -0.7 -1" height="0.2" width="0.9" color="gray" opacity="0.2">
+                        <!-- chips display -->
+                        <a-plane class="hudChips" id="c0" visible="false" material="src: #chipFront; transparent: true" position="-0.33 0.1 0.05" scale="0.05" height="0.05"></a-plane>
+                        <a-plane class="hudChips" id="c1" visible="false" material="src: #chipFront; transparent: true" position="-0.26 0.1 0.05" scale="0.05" height="0.05"></a-plane>
+                        <a-plane class="hudChips" id="c2" visible="false" material="src: #chipFront; transparent: true" position="-0.19 0.1 0.05" scale="0.05" height="0.05"></a-plane>
+                        <a-plane class="hudChips" id="c3" visible="false" material="src: #chipFront; transparent: true" position="-0.12 0.1 0.05" scale="0.05" height="0.05"></a-plane>
+                        <a-plane class="hudChips" id="c4" visible="false" material="src: #chipFront; transparent: true" position="-0.05 0.1 0.05" scale="0.05" height="0.05"></a-plane>
+                        <a-plane class="hudChips" id="c5" visible="false" material="src: #chipFront; transparent: true" position="0.02 0.1 0.05" scale="0.05" height="0.05"></a-plane>
+                        <a-plane class="hudChips" id="c6" visible="false" material="src: #chipFront; transparent: true" position="0.09 0.1 0.05" scale="0.05" height="0.05"></a-plane>
+                        <a-plane class="hudChips" id="c7" visible="false" material="src: #chipFront; transparent: true" position="0.16 0.1 0.05" scale="0.05" height="0.05"></a-plane>
+                        <a-plane class="hudChips" id="c8" visible="false" material="src: #chipFront; transparent: true" position="0.23 0.1 0.05" scale="0.05" height="0.05"></a-plane>
+                        <a-plane class="hudChips" id="c9" visible="false" material="src: #chipFront; transparent: true" position="0.3 0.1 0.05" scale="0.05" height="0.05"></a-plane>
+
+                        <!-- keys display -->
+                        <a-plane class="boardIcon" visible="false" material="src: #green-key; transparent: true" position="-0.3 0 0.05" scale="0.1" height="0.1"></a-plane>
+                        <a-plane class="boardIcon" visible="false" material="src: #green-key; transparent: true" position="-0.2 0 0.05" scale="0.1" height="0.1"></a-plane>
+                        <a-plane class="boardIcon" visible="false" material="src: #red-key; transparent: true" position="-0.1 0 0.05" scale="0.1" height="0.1"></a-plane>
+                        <a-plane class="boardIcon" visible="false" material="src: #red-key; transparent: true" position="0 0 0.05" scale="0.1" height="0.1"></a-plane>
+                        <a-plane class="boardIcon" visible="false" material="src: #blue-key; transparent: true" position="0.1 0 0.05" scale="0.1" height="0.1"></a-plane>
+                        <a-plane class="boardIcon" visible="false" material="src: #blue-key; transparent: true" position="0.2 0 0.05" scale="0.1" height="0.1"></a-plane>
+                        <a-plane class="boardIcon" visible="false" material="src: #yellow-key; transparent: true" position="0.3 0 0.05" scale="0.1" height="0.1"></a-plane>
+                        <a-plane class="boardIcon" visible="false" material="src: #yellow-key; transparent: true" position="0.4 0 0.05" scale="0.1" height="0.1"></a-plane>
+                    
+                        <!-- info pane display -->
+                        <a-plane class="orbDisplay" height="1.5" width="1.5" color="gray" visible="false" position="1 0.5 -1" material="transparent: true" opacity="0.5" rotation="-15 0 0">
+                            <a-plane class="orbDisplay" height="1.4" width="1.4" color="white" visible="false" position="0 0 0.001" material="transparent: true" opacity="0.5">
+                                <a-text value="Hint:"position="-0.6 0.2 0"></a-text>
+                                <a-text value="Collect chips to get \nthrough chip door." position="-0.6 -0.2 0" width="2.5"></a-text>
+                                <a-text value="Use keys to oper doors." position="-0.6 -0.5 0" width="2.5"></a-text>
+                            </a-plane>
+                        </a-plane>
+                    </a-plane>
+                </a-entity>
+            </a-entity>
+
+            <!-- Room Setup -->            
+            <rw-room position="0 0 0" material="color:#787; src: #wallrock2; repeat: 2 2" height="3">
+                <!-- four static-body corner cylinders -->
+                <rw-wall position="-5 0 -5" height="3"> 
+                        <a-plane static-body position="3.5 0 0.001" width="2" height="3" color="green" visible="false"></a-plane>
+                        <a-plane static-body position="7.5 0 0.001" width="0.5" height="3" color="green" visible="false"></a-plane>
+                    <rw-doorhole id="A"></rw-doorhole>
+                    <rw-doorlink from="#A" to="#A0" material="color:#778" position="1 0 0">
+                        <a-plane static-body class="door" material="color:#787; src: #wallrock3; repeat: 3 3" position="0 1 -0.001" visible="true" height="2"></a-plane>
+                        <a-plane class="icon door" visible="true" material="src: #green-key; transparent: true" position="0 1.25 0.05" scale="0.5" height="0.5"></a-plane>
+                    </rw-doorlink>
+                    <rw-doorhole id="B"></rw-doorhole>
+                    <rw-doorlink from="#B" to="#B0" material="color:#778" position="9 0 0">
+                        <a-plane static-body class="door" material="color:#787; src: #wallrock3; repeat: 3 3" position="0 1 -0.001" visible="true" height="2"></a-plane>
+                        <a-plane class="icon door" visible="true" material="src: #green-key; transparent: true" position="0 1.25 0.05" scale="0.5" height="0.5"></a-plane>
+                    </rw-doorlink>
+                    <rw-doorhole id="chips"></rw-doorhole>
+                    <rw-doorlink from="#chips" to="#chips0" material="color:#778" position="6w 0 0">
+                        <a-plane static-body class="door" material="color:#787; src: #wallrock3; repeat: 3 3" position="0 1 -0.001" visible="true" height="2"></a-plane>
+                        <a-plane class="icon door" visible="true" material="src: #chipFront; transparent: true" position="0 1.25 0.05" scale="0.5" height="0.5"></a-plane>
+                    </rw-doorlink>
+                    <!-- chalkboard -->
+                    <a-plane color="black" position="3.5 1.6 0.001" material="color:black" height="1" width="2.6">
+                        <a-entity obj-model="obj: #chalk-obj; mtl: #chalk-mtl"
+                            id="chalkBoard"
+                            position="0 0 0" 
+                            scale="0.16 0.16 0.16" 
+                            rotation="0 270 0"
+                        ></a-entity>
+                        <!-- key icons -->
+                        <a-plane color="black" height="0.4" width="1.6" position="0.45 -0.15 0.005">
+
+                            <a-plane class="boardIcon" visible="false" material="src: #green-key; transparent: true" position="-0.75 0 0.05" scale="0.2" height="0.2"></a-plane>
+                            <a-plane class="boardIcon" visible="false" material="src: #green-key; transparent: true" position="-0.55 0 0.05" scale="0.2" height="0.2"></a-plane>
+                            <a-plane class="boardIcon" visible="false" material="src: #red-key; transparent: true" position="-0.35 0 0.05" scale="0.2" height="0.2"></a-plane>
+                            <a-plane class="boardIcon" visible="false" material="src: #red-key; transparent: true" position="-0.15 0 0.05" scale="0.2" height="0.2"></a-plane>
+                            <a-plane class="boardIcon" visible="false" material="src: #blue-key; transparent: true" position="0.05 0 0.05" scale="0.2" height="0.2"></a-plane>
+                            <a-plane class="boardIcon" visible="false" material="src: #blue-key; transparent: true" position="0.25 0 0.05" scale="0.2" height="0.2"></a-plane>
+                            <a-plane class="boardIcon" visible="false" material="src: #yellow-key; transparent: true" position="0.45 0 0.05" scale="0.2" height="0.2"></a-plane>
+                            <a-plane class="boardIcon" visible="false" material="src: #yellow-key; transparent: true" position="0.65 0 0.05" scale="0.2" height="0.2"></a-plane>
+
+                        </a-plane>
+                        <!-- stats -->
+                        <a-text scale="0.5 0.5 0.5" value="number of chips: " color="white" position="-1 0.3 0" font="https://cdn.aframe.io/fonts/SourceCodePro.fnt" material="color:white"></a-text>
+                        <a-text scale="0.5 0.5 0.5" value="needed: 10" color="white" position="-1 0.15 0" font="https://cdn.aframe.io/fonts/SourceCodePro.fnt" material="color:white"></a-text>
+                        <a-text id="chipsText" scale="0.5 0.5 0.5" value="0" color="white" position="0.1 0.3 0" font="https://cdn.aframe.io/fonts/SourceCodePro.fnt" material="color:white"></a-text>
+                        <a-text scale="0.5 0.5 0.5" value="current keys" color="white" position="-1.2 -0.2 0" font="https://cdn.aframe.io/fonts/SourceCodePro.fnt" material="color:white"></a-text>
+                    </a-plane>                        
+                </rw-wall>
+                <rw-wall position="5 0 -5" height="3">
+                    <a-plane static-body position="6 0 0.001" width="3" height="3" color="green" visible="false"></a-plane>
+                    <a-plane static-body position="0.6 0 0.001" width="2.5" height="3" color="green" visible="false"></a-plane>
+                    <rw-doorhole id="C"></rw-doorhole>
+                    <rw-doorlink from="#C" to="#C0" material="transparent: false; color:#778" position="3 0 0">
+                        <a-plane static-body class="door" material="color:#787; src: #wallrock3; repeat: 3 3; transparent: false;" visible="true" position="0 1 -0.001" height="2"></a-plane>
+                        <a-plane class="icon door" visible="true" material="src: #red-key; transparent: true" position="0 1.25 0.05" scale="0.5" height="0.5"></a-plane>
+                    </rw-doorlink>
+                    <rw-doorhole id="D"></rw-doorhole>
+                    <rw-doorlink from="#D" to="#D0" material="color:#778" position="9 0 0">
+                        <a-plane static-body class="door" material="color:#787; src: #wallrock3; repeat: 3 3" position="0 1 -0.001" visible="true" height="2"></a-plane>
+                        <a-plane class="icon door" visible="true" material="src: #blue-key; transparent: true" position="0 1.25 0.05" scale="0.5" height="0.5"></a-plane>
+                    </rw-doorlink>
+                </rw-wall>
+                <rw-wall position=" 5 0  5" height="3">
+                    <a-plane static-body position="6 0 0.001" width="3" height="3" color="green" visible="false"></a-plane>
+                    <a-plane static-body position="1.1 0 0.001" width="1" height="3" color="green" visible="false"></a-plane>
+                    <rw-doorhole id="E"></rw-doorhole>
+                    <rw-doorlink from="#E" to="#E0" material="color:#778" position="3 0 0">
+                        <a-plane static-body class="door" material="color:#787; src: #wallrock3; repeat: 3 3" position="0 1 -0.001" visible="true" height="2"></a-plane>
+                        <a-plane class="icon door" visible="true" material="src: #yellow-key; transparent: true" position="0 1.25 0.05" scale="0.5" height="0.5"></a-plane>
+                        
+                    </rw-doorlink>
+                    <rw-doorhole id="F"></rw-doorhole>
+                    <rw-doorlink from="#F" to="#F0" material="color:#778" position="9 0 0">
+                        <a-plane static-body class="door" material="color:#787; src: #wallrock3; repeat: 3 3" position="0 1 -0.001" visible="true" height="2"></a-plane>
+                        <a-plane class="icon door" visible="true" material="src: #yellow-key; transparent: true" position="0 1.25 0.05" scale="0.5" height="0.5"></a-plane>
+                    </rw-doorlink>
+                </rw-wall>
+                <rw-wall position="-5 0  5" height="3">
+                    <a-plane static-body position="6 0 0.001" width="3.5" height="3" color="green" visible="false"></a-plane>
+                    <a-plane static-body position="0.6 0 0.001" width="2.5" height="3" color="green" visible="false"></a-plane>
+                    <rw-doorhole id="G"></rw-doorhole>
+                    <rw-doorlink from="#G" to="#G0" material="color:#778" position="3 0 0">
+                        <a-plane static-body class="door" material="color:#787; src: #wallrock3; repeat: 3 3" position="0 1 -0.001" visible="true" height="2"></a-plane>
+                        <a-plane class="icon door" visible="true" material="src: #red-key; transparent: true" position="0 1.25 0.05" scale="0.5" height="0.5"></a-plane>
+
+                    </rw-doorlink>
+                    <rw-doorhole id="H"></rw-doorhole>
+                    <rw-doorlink from="#H" to="#H0" material="color:#778" position="9 0 0">
+                        <a-plane static-body class="door" material="color:#787; src: #wallrock3; repeat: 3 3" position="0 1 -0.001" visible="true" height="2"></a-plane>
+                        <a-plane class="icon door" visible="true" material="src: #blue-key; transparent: true" position="0 1.25 0.05" scale="0.5" height="0.5"></a-plane>
+
+                    </rw-doorlink>
+                </rw-wall>
+                <rw-floor material="color:#878; src: #wallrock1; repeat: 2 2"></rw-floor>
+                <rw-ceiling material="color:#878; src: #wallrock3; repeat: 2 2"></rw-ceiling>
+                <rw-sides material="color:#878; src: #wallrock1; repeat: 2 2"></rw-sides>
+            </rw-room>
+            <rw-room position="-5 0 -9" material="color:#878; src: #wallrock2; repeat: 2 2" width="4" length="4" height="3">
+                <rw-wall>
+                    <a-plane static-body position="2 0 0.001" width="3.5" height="3" color="green" visible="false"></a-plane>
+                </rw-wall>
+                <rw-wall>
+                    <a-plane static-body position="2 0 -0.001" width="3.5" height="3" color="green" visible="false"></a-plane>
+                </rw-wall>
+                <rw-wall>
+                    <rw-doorhole id="A0"></rw-doorhole>
+                </rw-wall>
+                <rw-wall>
+                    <a-plane static-body position="2 0 -0.001" width="3.5" height="3" color="green" visible="false"></a-plane>
+                </rw-wall>
+                <rw-floor material="color:#878; src: #wallrock4; repeat: 2 2"></rw-floor>
+                <rw-ceiling material="color:#878; src: #wallrock4; repeat: 2 2"></rw-ceiling>
+                <rw-sides material="color:#878; src: #wallrock2; repeat: 2 2"></rw-sides>
+            </rw-room>
+
+            <rw-room position="2.5 0 -9" material="color:#878; src: #wallrock4; repeat: 2 2" width="5" length="4" height="3">
+                <rw-wall>
+                    <a-plane static-body position="3 0 0.001" width="3" height="3" color="green" visible="false"></a-plane>     
+                </rw-wall>
+                <rw-wall>
+                    <a-plane static-body position="2 0 0.001" width="2" height="3" color="green" visible="false"></a-plane> 
+                </rw-wall>
+                <rw-wall>
+                    <rw-doorhole id="B0"></rw-doorhole>
+                </rw-wall>
+                <rw-wall>
+                    <a-plane static-body position="2 0 0.001" width="2" height="3" color="green" visible="false"></a-plane>                         
+                </rw-wall>
+                <rw-floor material="color:#878; src: #wallrock3; repeat: 2 2"></rw-floor>
+                <rw-ceiling material="color:#878; src: #wallrock3; repeat: 2 2"></rw-ceiling>
+                <rw-sides material="color:#878; src: #wallrock3; repeat: 2 2"></rw-sides>
+            </rw-room>
+
+            <rw-room position="5 0 -3" material="color:#878; src: #wallrock1; repeat: 2 2" width="4" length="2.5" height="3">
+                <rw-wall>
+                    <a-plane static-body position="2 0 -1.001" width="2" height="3" color="green" visible="false"></a-plane>                     
+                </rw-wall>
+                <rw-wall>
+                        <a-plane static-body position=" 1.2  0 0.001" width="1" height="3" color="green" visible="false"></a-plane>
+                </rw-wall>
+                <rw-wall>
+                        <a-plane static-body position="2 0 0.001" width="2" height="3" color="green" visible="false"></a-plane> 
+                </rw-wall>
+                <rw-wall>
+                    <rw-doorhole id="C0"></rw-doorhole>
+                </rw-wall>
+                <rw-floor material="color:#878; src: #wallrock2; repeat: 2 2"></rw-floor>
+                <rw-ceiling material="color:#878; src: #wallrock2; repeat: 2 2"></rw-ceiling>
+                <rw-sides material="color:#878; src: #wallrock2; repeat: 2 2"></rw-sides>
+            </rw-room>
+
+            <rw-room position="5 0 3.5" material="color:#878; src: #wallrock3; repeat: 2 2" width="4" length="4" height="3">
+                <rw-wall>
+                    <a-plane static-body position="2 0 0.001" width="2" height="3" color="green" visible="false"></a-plane> 
+                </rw-wall>
+                <rw-wall>
+                    <a-plane static-body position="2 0 0.001" width="2" height="3" color="green" visible="false"></a-plane> 
+                </rw-wall>
+                <rw-wall>
+                    <a-plane static-body position="2 0 0.001" width="2" height="3" color="green" visible="false"></a-plane>                         
+                </rw-wall>
+                <rw-wall>
+                    <rw-doorhole id="D0"></rw-doorhole>
+                </rw-wall>
+                <rw-floor material="color:#878; src: #wallrock1; repeat: 2 2"></rw-floor>
+                <rw-ceiling material="color:#878; src: #wallrock1; repeat: 2 2"></rw-ceiling>
+                <rw-sides material="color:#878; src: #wallrock1; repeat: 2 2"></rw-sides>
+            </rw-room>
+
+            <rw-room position="1 0 5" material="color:#878; src: #wallrock4; repeat: 2 2" width="4" length="4" height="3">
+                <rw-wall>
+                    <rw-doorhole id="E0"></rw-doorhole>
+                </rw-wall>
+                <rw-wall>
+                    <a-plane static-body position="2 0 0.001" width="2" height="3" color="green" visible="false"></a-plane>                         
+                </rw-wall>
+                <rw-wall>
+                    <a-plane static-body position="2 0 0.001" width="2" height="3" color="green" visible="false"></a-plane>                         
+                </rw-wall>
+                <rw-wall>
+                    <a-plane static-body position="2 0 0.001" width="2" height="3" color="green" visible="false"></a-plane>                         
+                </rw-wall>
+                <rw-floor material="color:#878; src: #wallrock3; repeat: 2 2"></rw-floor>
+                <rw-ceiling material="color:#878; src: #wallrock3; repeat: 2 2"></rw-ceiling>
+                <rw-sides material="color:#878; src: #wallrock3; repeat: 2 2"></rw-sides>
+            </rw-room>
+
+            <rw-room position="-5 0 5" material="color:#878; src: #wallrock4; repeat: 2 2" width="4" length="4" height="3">
+                <rw-wall>
+                    <rw-doorhole id="F0"></rw-doorhole>
+                </rw-wall>
+                <rw-wall>
+                    <a-plane static-body position="2 0 0.001" width="2" height="3" color="green" visible="false"></a-plane>                         
+                </rw-wall>
+                <rw-wall>
+                    <a-plane static-body position="2 0 0.001" width="2" height="3" color="green" visible="false"></a-plane>                         
+                </rw-wall>
+                <rw-wall>
+                    <a-plane static-body position="2 0 0.001" width="2" height="3" color="green" visible="false"></a-plane>                         
+                </rw-wall>
+                <rw-floor material="color:#878; src: #wallrock1; repeat: 2 2"></rw-floor>
+                <rw-ceiling material="color:#878; src: #wallrock1; repeat: 2 2"></rw-ceiling>
+                <rw-sides material="color:#878; src: #wallrock1; repeat: 2 2"></rw-sides>
+            </rw-room>
+
+            <rw-room position="-9 0 1" material="color:#878; src: #wallrock1; repeat: 2 2" width="4" length="4" height="3">
+                <rw-wall>
+                    <a-plane static-body position="2 0 0.001" width="2" height="3" color="green" visible="false"></a-plane>                                             
+                </rw-wall>
+                <rw-wall>
+                    <rw-doorhole id="G0"></rw-doorhole>
+                </rw-wall>
+                <rw-wall>
+                    <a-plane static-body position="2 0 0.001" width="2" height="3" color="green" visible="false"></a-plane>                         
+                </rw-wall>
+                <rw-wall>
+                    <a-plane static-body position="2 0 0.001" width="2" height="3" color="green" visible="false"></a-plane>                         
+                </rw-wall>
+                <rw-floor material="color:#878; src: #wallrock4; repeat: 2 2"></rw-floor>
+                <rw-ceiling material="color:#878; src: #wallrock4; repeat: 2 2"></rw-ceiling>
+                <rw-sides material="color:#878; src: #wallrock4; repeat: 2 2"></rw-sides>
+            </rw-room>
+
+            <rw-room position="-9 0 -5" material="color:#878; src: #wallrock2; repeat: 2 2" width="4" length="4" height="3">
+                <rw-wall>
+                    <a-plane static-body position="2 0 0.001" width="2" height="3" color="green" visible="false"></a-plane>                         
+                </rw-wall>
+                <rw-wall>
+                    <rw-doorhole id="H0"></rw-doorhole>
+                </rw-wall>
+                <rw-wall>
+                    <a-plane static-body position="2 0 0.001" width="2" height="3" color="green" visible="false"></a-plane>                         
+                </rw-wall>
+                <rw-wall>
+                    <a-plane static-body position="2 0 0.001" width="2" height="3" color="green" visible="false"></a-plane>                         
+                </rw-wall>
+                <rw-floor material="color:#878; src: #wallrock3; repeat: 2 2"></rw-floor>
+                <rw-ceiling material="color:#878; src: #wallrock3; repeat: 2 2"></rw-ceiling>
+                <rw-sides material="color:#878; src: #wallrock3; repeat: 2 2"></rw-sides>
+            </rw-room>
+            <rw-room position="0 0 -9" material="color:#878; src: #wallrock2; repeat: 2 2" width="2" length="4" height="3">
+
+                <rw-wall>
+                        <a-plane static-body position="1 0 0.001" width="1" height="3" color="green" visible="false"></a-plane> 
+                </rw-wall>
+                <rw-wall></rw-wall>
+                <rw-wall>
+                    <rw-doorhole id="chips0"></rw-doorhole>
+                </rw-wall>
+                <rw-wall></rw-wall>
+                <rw-floor material="color:#878; src: #wallrock3; repeat: 2 2"></rw-floor>
+                <rw-ceiling material="color:#878; src: #wallrock3; repeat: 2 2"></rw-ceiling>
+                <rw-sides material="color:#878; src: #wallrock3; repeat: 2 2"></rw-sides>
+            </rw-room>
+
+            <!-- Information Orb -->
+            <a-entity>
+                <a-sphere id="orbSphere" 
+                        class="orb" 
+                        position="0 1.5 0.9"
+                        rotation="0 0 45"
+                        color="yellow" 
+                        material="opacity:0.6; src:#quest" 
+                        scale="0.5 0.5 0.5"
+                        event-set__enter="_event: mouseenter; color: green"
+                        event-set__leave="_event: mouseleave; color: yellow"
+                        animation__moving="property: rotation; dur: 10000;
+                        easing: linear; loop: true; to: 0 360 0">
+                    <!-- <a-animation attribute="position" to="0 1.8 0.9" direction="alternate" repeat="indefinite"></a-animation> -->
+                    <!--<a-entity position="0 0 -0.4" particle-system="opacity: 0.5; rotationAxis: y; rotationAngle: 45; direction: -1; preset: dust; patricleCount: 10000; color: #EF0000,#44CC00; positionSpread: -1 0.5 0; duration: 200; maxAge: 0.4"></a-entity>-->
+                    <!--<a-entity id="dialog" position="0 0 0" dialog-popup="openIconColor: red; dialogBoxWidth: 1; dialogBoxHeight: 1; title: Look at this shit; body: this is my blood"></a-entity>-->
+                </a-sphere>
+                
+            </a-entity>
+
+            <!-- keys -->
+            <a-entity obj-model="obj: #key-obj"
+                        class="pickup key" 
+                        material="color: blue" 
+                        position="-4.6 1 -2.5" 
+                        rotation="0 0 25" 
+                        scale="0.001 0.001 0.001"
+                        visible="true"
+                        make-invisible="visible: true">
+                <a-animation attribute="rotation" 
+                    to="0 360 25" 
+                    easing="linear" 
+                    repeat="indefinite" 
+                    fill="fowards" 
+                    dur="5000"></a-animation>
+            </a-entity>
+            <a-entity obj-model="obj: #key-obj" 
+                        class="pickup key"
+                        material="color: blue" 
+                        position="-4.6 1 0.5" 
+                        rotation="0 0 25" 
+                        scale="0.001 0.001 0.001"
+                        visible="true"
+                        make-invisible="visible: true">
+                <a-animation attribute="rotation" 
+                    to="0 360 25" 
+                    easing="linear" 
+                    repeat="indefinite" 
+                    fill="fowards" 
+                    dur="5000"></a-animation>
+            </a-entity>
+            <a-entity obj-model="obj: #key-obj" 
+                        class="pickup key"            
+                        material="color: red" 
+                        position="4.6 1 -0.6" 
+                        rotation="0 0 25" 
+                        scale="0.001 0.001 0.001"
+                        visible="true"
+                        make-invisible="visible: true">
+                <a-animation attribute="rotation" 
+                    to="0 360 25" 
+                    easing="linear" 
+                    repeat="indefinite" 
+                    fill="fowards" 
+                    dur="5000"></a-animation>
+            </a-entity>
+            <a-entity obj-model="obj: #key-obj" 
+                        class="pickup key"
+                        material="color: red" 
+                        position="4.6 1 2.5" 
+                        rotation="0 0 25" 
+                        scale="0.001 0.001 0.001"
+                        visible="true"
+                        make-invisible="visible: true">
+                <a-animation attribute="rotation" 
+                    to="0 360 25" 
+                    easing="linear" 
+                    repeat="indefinite" 
+                    fill="fowards" 
+                    dur="5000"></a-animation>        
+            </a-entity>
+            <a-entity obj-model="obj: #key-obj" 
+                        class="pickup key"
+                        material="color: yellow" 
+                        position="6.6 1 -1.35" 
+                        rotation="0 0 25" 
+                        scale="0.001 0.001 0.001"
+                        visible="true"
+                        make-invisible="visible: true">
+                <a-animation attribute="rotation" 
+                                to="0 360 25" 
+                                easing="linear" 
+                                repeat="indefinite" 
+                                fill="fowards" 
+                                dur="5000"></a-animation>        
+            </a-entity>
+            <a-entity obj-model="obj: #key-obj" 
+                        class="pickup key"
+                        material="color: yellow" 
+                        position="-6.6 1 -2" 
+                        rotation="0 0 25" 
+                        scale="0.001 0.001 0.001"
+                        visible="true"
+                        make-invisible="visible: true">
+                <a-animation attribute="rotation" 
+                                to="0 360 25" 
+                                easing="linear" 
+                                repeat="indefinite" 
+                                fill="fowards" 
+                                dur="5000"></a-animation>        
+            </a-entity>
+            <a-entity obj-model="obj: #key-obj" 
+                        class="pickup key"
+                        material="color: green" 
+                        position="2 1 8" 
+                        rotation="0 0 25" 
+                        scale="0.001 0.001 0.001"
+                        visible="true"
+                        make-invisible="visible: true">
+                <a-animation attribute="rotation" 
+                                to="0 360 25" 
+                                easing="linear" 
+                                repeat="indefinite" 
+                                fill="fowards" 
+                                dur="5000"></a-animation>        
+            </a-entity>
+         
+
+
+            <!-- chips -->
+            <a-entity obj-model="obj: #chip-obj; mtl: #chip-mtl" class="pickup chip" make-invisible="visible: true" position="-4.6 1 -1" scale="0.4 0.4 0.4">
+                <a-animation attribute="rotation" to="0 360 0" fill="fowards" dur="3000" repeat="indefinite" easing="linear"></a-animation>
+            </a-entity>
+            <a-entity obj-model="obj: #chip-obj; mtl: #chip-mtl" class="pickup chip" position="4.6 1 1" scale="0.4 0.4 0.4" make-invisible="visible: true">
+                    <a-animation attribute="rotation" to="0 360 0" fill="fowards" dur="3000" repeat="indefinite" easing="linear"></a-animation>
+            </a-entity>
+            <a-entity obj-model="obj: #chip-obj; mtl: #chip-mtl" class="pickup chip" position="-1 1 4.5" scale="0.4 0.4 0.4" make-invisible="visible: true">
+                    <a-animation attribute="rotation" to="0 360 0" fill="fowards" dur="3000" repeat="indefinite" easing="linear"></a-animation>
+            </a-entity>
+            <a-entity obj-model="obj: #chip-obj; mtl: #chip-mtl" class="pickup chip" position="-3.5 1 -7" scale="0.4 0.4 0.4" make-invisible="visible: true">
+                    <a-animation attribute="rotation" to="0 360 0" fill="fowards" dur="3000" repeat="indefinite" easing="linear"></a-animation>
+            </a-entity>
+            <a-entity obj-model="obj: #chip-obj; mtl: #chip-mtl" class="pickup chip" position="3.5 1 -7" scale="0.4 0.4 0.4" make-invisible="visible: true">
+                    <a-animation attribute="rotation" to="0 360 0" fill="fowards" dur="3000" repeat="indefinite" easing="linear"></a-animation>
+            </a-entity>
+            <a-entity obj-model="obj: #chip-obj; mtl: #chip-mtl" class="pickup chip" position="8 1 -1.4" scale="0.4 0.4 0.4" make-invisible="visible: true">
+                <a-animation attribute="rotation" to="0 360 0" fill="fowards" dur="3000" repeat="indefinite" easing="linear"></a-animation>
+            </a-entity>
+            <a-entity obj-model="obj: #chip-obj; mtl: #chip-mtl" class="pickup chip" position="8 1 5.5" scale="0.4 0.4 0.4" make-invisible="visible: true">
+                <a-animation attribute="rotation" to="0 360 0" fill="fowards" dur="3000" repeat="indefinite" easing="linear"></a-animation>
+            </a-entity> 
+            <a-entity obj-model="obj: #chip-obj; mtl: #chip-mtl" class="pickup chip" position="4 1 8" scale="0.4 0.4 0.4" make-invisible="visible: true">
+                <a-animation attribute="rotation" to="0 360 0" fill="fowards" dur="3000" repeat="indefinite" easing="linear"></a-animation>
+            </a-entity>
+            <a-entity obj-model="obj: #chip-obj; mtl: #chip-mtl" class="pickup chip" position="-4 1 8" scale="0.4 0.4 0.4" make-invisible="visible: true">
+                <a-animation attribute="rotation" to="0 360 0" fill="fowards" dur="3000" repeat="indefinite" easing="linear"></a-animation>
+            </a-entity>
+            <a-entity obj-model="obj: #chip-obj; mtl: #chip-mtl" class="pickup chip" position="-8 1 -1.4" scale="0.4 0.4 0.4" make-invisible="visible: true">
+                <a-animation attribute="rotation" to="0 360 0" fill="fowards" dur="3000" repeat="indefinite" easing="linear"></a-animation>
+            </a-entity>
+            <a-entity obj-model="obj: #chip-obj; mtl: #chip-mtl" class="pickup chip" position="-8 1 4" scale="0.4 0.4 0.4" make-invisible="visible: true">
+                <a-animation attribute="rotation" to="0 360 0" fill="fowards" dur="3000" repeat="indefinite" easing="linear"></a-animation>
+            </a-entity>
+
+
+            <!-- portal -->
+            <a-entity obj-model="obj: #portal1-obj; mtl: #portal1-mtl"
+                      material="src:#portalColor" 
+                      class="portalDoor"
+                      id="portal"
+                      position="1 0.3 -8.3" 
+                      scale="0.05 0.05 0.05" 
+                      rotation="0 180 0"
+                      sound="src: #winner; on: mouseenter; volume: 10">
+                <a-animation attribute="position" to="1 0.1 -8.3" direction="alternate" repeat="indefinite" easing="linear"></a-animation>      
+                <!-- axis must be in center of object for animation to work -->      
+                <!--<a-animation attribute="rotation" to="0 0 360" repeat="indefinite" easing="linear"></a-animation>-->        
+            </a-entity>
+
+        </a-scene>
+        <script>
+            // portal click opens up new window
+            const portal = document.querySelector('#portal');
+            portal.addEventListener('click', function(e) {
+                console.log('click event');
+                window.location.href = "https://www.badgerbadgerbadger.com/";
+            });
+
+            // function for updating key inventory on chalkboard
+            const keyUpdate = function() {
+                const keyIcons = document.querySelectorAll('.boardIcon');
+                if (keys['green-key'] == 1) {
+                    keyIcons[0].attributes.visible.nodeValue = "true";
+                    keyIcons[1].attributes.visible.nodeValue = "false";
+                } else if (keys['green-key'] == 2) {
+                    keyIcons[0].attributes.visible.nodeValue = "true";
+                    keyIcons[1].attributes.visible.nodeValue = "true";                
+                } else if (keys['green-key'] == 0) {
+                    keyIcons[0].attributes.visible.nodeValue = "false";
+                    keyIcons[1].attributes.visible.nodeValue = "false";      
+                }
+                if (keys['red-key'] == 1) {
+                    keyIcons[2].attributes.visible.nodeValue = "true";
+                    keyIcons[3].attributes.visible.nodeValue = "false";
+                } else if (keys['red-key'] == 2) {
+                    keyIcons[2].attributes.visible.nodeValue = "true";
+                    keyIcons[3].attributes.visible.nodeValue = "true";  
+                }  else if (keys['red-key'] == 0) {
+                    keyIcons[2].attributes.visible.nodeValue = "false";
+                    keyIcons[3].attributes.visible.nodeValue = "false";      
+                }    
+                if (keys['blue-key'] == 1) {
+                    keyIcons[4].attributes.visible.nodeValue = "true";
+                    keyIcons[5].attributes.visible.nodeValue = "false";
+                } else if (keys['blue-key'] == 2) {
+                    keyIcons[4].attributes.visible.nodeValue = "true";
+                    keyIcons[5].attributes.visible.nodeValue = "true";  
+                } else if (keys['blue-key'] == 0) {
+                    keyIcons[4].attributes.visible.nodeValue = "false";
+                    keyIcons[5].attributes.visible.nodeValue = "false";      
+                }                
+                if (keys['yellow-key'] == 1) {
+                    keyIcons[6].attributes.visible.nodeValue = "true";
+                    keyIcons[7].attributes.visible.nodeValue = "false";
+                } else if (keys['yellow-key'] == 2) {
+                    keyIcons[6].attributes.visible.nodeValue = "true";
+                    keyIcons[7].attributes.visible.nodeValue = "true";  
+                } else if (keys['yellow-key'] == 0) {
+                    keyIcons[6].attributes.visible.nodeValue = "false";
+                    keyIcons[7].attributes.visible.nodeValue = "false";      
+                };                
+            }
+
+            // keys and chips data objects
+            const keys = {'red-key': 0, 'green-key': 0, 'blue-key': 0, 'yellow-key': 0};
+            let chips = 0;
+
+            // making items invisible and storing key and chip data
+            const pickup = document.querySelectorAll('.pickup');
+            const hudChips = document.querySelectorAll('.hudChips');
+            const pickupSound = new Audio('assets/pickup.wav');
+            const displayValue = document.querySelector('#chipsText');
+            for (let i = 0; i < pickup.length; i++) {
+                const temp = pickup[i];
+                if (temp.className == 'pickup key') {
+                    temp.addEventListener('mouseenter', function(e) {
+                        if (temp.attributes.material.nodeValue == 'color: red') { // and the condition that they are visible
+                            if (temp.className == 'pickup key picked-up') {
+                                console.log("already picked up this key");
+                            } else {
+                                keys['red-key']++;
+                                pickupSound.play();
+                                temp.className = temp.className + " picked-up";
+                                console.log('red key picked-up');
+                                keyUpdate();
+                                console.log(keys);
+                                console.log(temp);
+                            }
+                        } else if (temp.attributes.material.nodeValue == 'color: yellow') {                            
+                            if (temp.className == 'pickup key picked-up') {
+                                console.log("already picked up this key");
+                            } else {   
+                                keys['yellow-key']++;
+                                pickupSound.play();
+                                temp.className = temp.className + " picked-up";
+                                keyUpdate();
+                                console.log('yellow key picked-up');
+                                console.log(keys);
+                                console.log(temp);
+                            }
+                        } else if (temp.attributes.material.nodeValue == 'color: green') {
+                            if (temp.className == 'pickup key picked-up') {
+                                console.log("already picked up this key");
+                            } else {   
+                                keys['green-key']++;
+                                pickupSound.play();
+                                temp.className = temp.className + " picked-up";
+                                keyUpdate();
+                                console.log('green key picked-up');
+                                console.log(keys);
+                                console.log(temp);
+                            }
+                        } else if (temp.attributes.material.nodeValue == 'color: blue') {
+                            if (temp.className == 'pickup key picked-up') {
+                                console.log("already picked up this key");
+                            } else { 
+                                keys['blue-key']++;
+                                pickupSound.play();
+                                temp.className = temp.className + " picked-up";
+                                console.log('blue key picked-up');
+                                keyUpdate();
+                                console.log(keys);
+                                console.log(temp);
+                            }
+                            console.log(temp.className)
+                        }
+                        console.log(temp.className)
+                    })
+                } else if (temp.className == 'pickup chip') {
+                    temp.addEventListener('mouseenter', function(e) {
+                        if (temp.className == 'pickup chip picked-up') {
+                            console.log("already picked up this chip");
+                        } else {
+                            console.log("picked up chip");
+                            chips++;
+                            const tempChip = "c" + (chips-1);
+                            // loop through hud chips, find corresponding, turn visible
+                            for (let i = 0; i < hudChips.length; i++) {
+                                if (hudChips[i].id == tempChip) {
+                                    hudChips[i].attributes.visible.nodeValue = "true";
+                                }
+                            }
+                            pickupSound.play();
+                            console.log(displayValue.attributes.value.value);
+                            displayValue.attributes.value.value = chips;
+                            console.log(displayValue.attributes.value.value);
+                            temp.className = temp.className + " picked-up";
+                            console.log(chips);
+                        }
+                    })
+                }
+            }
+
+            // query doors
+            const doors = document.querySelectorAll('.icon');
+            const unlockSound = new Audio('assets/unlock.wav');
+            for(let i = 0; i < doors.length; i++) {
+                const temp = doors[i];
+                temp.addEventListener('mouseenter', function(e) {
+                    console.log("door has been queried");
+                    
+                    let prev = temp.previousElementSibling;
+                    console.log(prev);
+                    // find out the color of the door
+                    // check the amount of keys available
+                    // make the door invisible
+                    console.log(temp.attributes.material.nodeValue);
+                    
+
+                    if (temp.attributes.material.nodeValue == 'src: #green-key; transparent: true' && keys['green-key'] > 0) {
+                        console.log("green door opened");
+                        temp.attributes.visible.nodeValue = "false";
+                        prev.attributes.visible.nodeValue = "false";
+                        prev.removeAttribute('static-body');
+                        keys['green-key']--;
+                        unlockSound.play();
+                        keyUpdate();
+                    } else if (temp.attributes.material.nodeValue == 'src: #red-key; transparent: true' && keys['red-key'] > 0) {
+                        console.log('red door opened');
+                        temp.attributes.visible.nodeValue = "false";
+                        prev.attributes.visible.nodeValue = "false";
+                        prev.removeAttribute('static-body');
+                        keys['red-key']--;
+                        unlockSound.play();
+                        keyUpdate();
+                    } else if (temp.attributes.material.nodeValue == 'src: #yellow-key; transparent: true' && keys['yellow-key'] > 0) {
+                        console.log('yellow door opened');
+                        temp.attributes.visible.nodeValue = "false";
+                        prev.attributes.visible.nodeValue = "false";
+                        prev.removeAttribute('static-body');
+                        keys['yellow-key']--;
+                        unlockSound.play();
+                        keyUpdate();
+                    } else if (temp.attributes.material.nodeValue == 'src: #blue-key; transparent: true' && keys['blue-key'] > 0) {
+                        console.log('blue door opened');
+                        temp.attributes.visible.nodeValue = "false";
+                        prev.attributes.visible.nodeValue = "false";
+                        prev.removeAttribute('static-body');
+                        keys['blue-key']--;
+                        unlockSound.play();
+                        keyUpdate();
+                    } else if (temp.attributes.material.nodeValue == 'src: #chipFront; transparent: true' && chips >= 10) { // where src: #chips or whatever
+                        temp.attributes.visible.nodeValue = "false";
+                        prev.attributes.visible.nodeValue = "false";
+                        prev.removeAttribute('static-body');
+                        console.log("portal door opened");
+                        unlockSound.play();
+                    }
+                });
+            }
+
+
+            // checking attributes of portalDoor
+            const portalDoor = document.querySelector('#portalDoor');
+
+            // information orb listener
+            const orb = document.querySelector('#orbSphere');
+            const hudSquare = document.querySelectorAll('.orbDisplay');
+            orb.addEventListener('mouseenter', function(e) {
+                // orb stop animation
+                hudSquare[0].attributes.visible.nodeValue = "true";
+                hudSquare[1].attributes.visible.nodeValue = "true";
+            });
+            orb.addEventListener('mouseleave', function(e) {
+                // orb start animation
+                hudSquare[0].attributes.visible.nodeValue = "false";
+                hudSquare[1].attributes.visible.nodeValue = "false";
+            });
+        </script>
+    </body>    
+</html>
