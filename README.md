@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://github.com/sam-parsons/MultiMeterMetronome">
-    <img src="./hqdefault.jpg" alt="metro symbol" width="80" />
+    <img src="./assets/hqdefault.jpg" alt="metro symbol" width="80" />
   </a>
 </p>
 
@@ -15,7 +15,7 @@
 </p>
 
 <a href="https://sam-parsons-chips-challenge.glitch.me/">
-  <img src="./chips.gif" alt="metro thumbnail" width="100%" />
+  <img src="./assets/chips.gif" alt="metro thumbnail" width="100%" />
 </a>
 
 <br>
@@ -28,7 +28,7 @@
 </p>
 
 <p align="center">
-<a href="https://aframe.io/"><img src="./aframelogo1.png" width="15%" ></a>
+<a href="https://aframe.io/"><img src="./assets/aframelogo1.png" width="15%" ></a>
 </p>
 
 Through the eyes of Chip McCallahan, solve a simple puzzle by collecting all the chips!
