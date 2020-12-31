@@ -9,9 +9,7 @@
 <h1 align="center">Chip's Challenge - Ep. 1</h1>
 
 <p align="center">
-  First level of classic Chip's Challenge in VR</a>.
-  <br>
-  <a href="https://sam-parsons-chips-challenge.glitch.me/"><strong>Live Demo »</strong></a>
+  <a href="https://sam-parsons-chips-challenge.glitch.me/"><strong> First level of classic Chip's Challenge in VR</strong></a>
 </p>
 
 <a href="https://sam-parsons-chips-challenge.glitch.me/">
